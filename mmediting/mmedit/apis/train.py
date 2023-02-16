@@ -101,7 +101,7 @@ def _dist_train(model,
             Default: None.
     """
     dataset = dataset if isinstance(dataset, (list, tuple)) else [dataset]
-
+    # breakpoint()
     # step 1: give default values and override (if exist) from cfg.data
     loader_cfg = {
         **dict(seed=cfg.get('seed'), drop_last=False, dist=True),
@@ -149,7 +149,7 @@ def _dist_train(model,
         cfg.lr_config,
         checkpoint_config=cfg.checkpoint_config,
         log_config=cfg.log_config)
-
+    # breakpoint()
     # visual hook
     if cfg.get('visual_config', None) is not None:
         cfg.visual_config['output_dir'] = os.path.join(
@@ -184,7 +184,7 @@ def _dist_train(model,
             DistEvalIterHook(
                 data_loader, save_path=save_path, **cfg.evaluation),
             priority='LOW')
-
+        # breakpoint()
     # user-defined hooks
     if cfg.get('custom_hooks', None):
         custom_hooks = cfg.custom_hooks
@@ -203,7 +203,15 @@ def _dist_train(model,
         runner.resume(cfg.resume_from)
     elif cfg.load_from:
         runner.load_checkpoint(cfg.load_from)
+    ###########################################################################
+    # breakpoint()
+    if 'BlindSR' in cfg.model.type:
+        if cfg.model.contrastive_part.backbone.pretrained != None:
+            pretrained = cfg.model.contrastive_part.backbone.pretrained
+            model.module.contrastive_part.module.backbone.init_weights(pretrained)
+    ###########################################################################
     runner.run(data_loaders, cfg.workflow, cfg.total_iters)
+    
 
 
 def _non_dist_train(model,

@@ -89,7 +89,10 @@ class Classification(BaseModel):
         labels = label.repeat(num_views)
         cls_score, _ =  self.head(x, labels)
         
-        
+        # breakpoint()
+        # save the img of the test data
+        # from torchvision.utils import save_image
+        # save_image(img, 'work_dirs/selfsup/moco/transfer_moco_easyres_Ours_supcon_S1/')
         # losses = self.head.loss(cls_score, labels)
         # outs = self.head(x)
         # keys = [f'head{i}' for i in self.backbone.out_indices]

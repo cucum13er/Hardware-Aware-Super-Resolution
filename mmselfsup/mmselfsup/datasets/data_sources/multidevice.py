@@ -147,6 +147,7 @@ class MultiDevice(BaseDataSource):
         # print(self.samples,'1111111111111111111111111111\n')################################
         data_infos = []
         for i, (filename, gt_label) in enumerate(self.samples):
+            # breakpoint()
             ############
             # print(filename, gt_label, '1111111111111111\n' )
             ##############

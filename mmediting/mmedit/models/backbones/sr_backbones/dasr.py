@@ -154,11 +154,13 @@ class DASR(nn.Module):
                     num_layers = 8,
                     scale = 4,
                     reduction = 8,
+                    frozen_groups = 0,
                     # deg_rand = False,
                 ):
         super(DASR, self).__init__()
         self.num_groups = num_groups
         self.num_blocks = num_blocks
+        self.frozen_groups = frozen_groups
         # self.deg_rand = deg_rand
         conv = common.default_conv
         # self.deg_head = build_backbone(deg_head)
@@ -175,6 +177,7 @@ class DASR(nn.Module):
         modules_tail = [common.Upsampler(conv, scale, mid_channels, act=False),
                         conv(mid_channels, in_channels, kernel_size)] #################
         self.tail = nn.Sequential(*modules_tail)
+        self._freeze_stages()
         # breakpoint()
     def forward(self, x, feat):
         # # get the degradation feature map
@@ -224,6 +227,22 @@ class DASR(nn.Module):
             raise TypeError('"pretrained" must be a str or None. '
                             f'But received {type(pretrained)}.')        
         
+    def _freeze_stages(self):
+        if self.frozen_groups > 0:
+            for l in self.head:
+                l.eval()
+                for param in l.parameters():
+                    param.requires_grad = False
+        for i in range(0, self.frozen_groups):
+            m = self.body[i]
+            m.eval()
+            for param in m.parameters(): 
+                param.requires_grad = False
+                # breakpoint()
+            # m = getattr(self, f'layer{i}')
+            # m.eval()
+            # for param in m.parameters():
+            #     param.requires_grad = False        
     # def __init__(self, args, conv=common.default_conv):
     #     super(DASR, self).__init__()
 

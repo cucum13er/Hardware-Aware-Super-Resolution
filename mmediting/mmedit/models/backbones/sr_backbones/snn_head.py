@@ -84,7 +84,7 @@ class SNNLossHead(BaseModule):
             lossall.append(single_loss)
             # print(numerator, denominator,single_loss)
         losses = dict()
-        losses['loss'] = -torch.mean(torch.stack(lossall))
+        losses['loss_contrastive'] = -torch.mean(torch.stack(lossall))
         '''
         tensor = torch.Tensor([[1, 2, 2, 7], [3, 1, 2, 4], [3, 1, 9, 4]])
         (tensor == 2).nonzero(as_tuple=False)

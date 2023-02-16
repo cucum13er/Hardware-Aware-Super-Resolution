@@ -61,6 +61,7 @@ class BlindSR_MoCo(BaseModel):
                  pretrained=None,
                  train_contrastive=False,
                  contrastive_loss_factor=1,
+                 clipping_value = 1
                  ):
         super().__init__()
 
@@ -78,6 +79,7 @@ class BlindSR_MoCo(BaseModel):
         # self.neck = build_component(neck)
         # loss
         self.pixel_loss = build_loss(pixel_loss)
+        self.clipping_value = clipping_value
         # self.contrastive_loss = build_loss(contrastive_loss) if contrastive_loss else None
     def init_weights(self, pretrained=None):
         """Init weights for models.
@@ -106,7 +108,7 @@ class BlindSR_MoCo(BaseModel):
 
 
 
-    def forward_train(self, lq, gt, gt_label, **kwargs):
+    def forward_train(self, lq, gt, lq_view, gt_view, gt_label, **kwargs):
         """Training forward function.
 
         Args:
@@ -117,21 +119,45 @@ class BlindSR_MoCo(BaseModel):
         Returns:
             Tensor: Output tensor.
         """
+        #######################################################################
+        # import time
+        # t_s = time.time()
+        # print('start the batch: ', t_s)
+        #######################################################################        
         # breakpoint()
+        if self.train_contrastive:
+            for param in self.generator.parameters():
+                param.requires_grad = False
+        #######################################################################
+        # t = time.time() - t_s
+        # print('set parame 0 grad: ', t)
+        #######################################################################    
+        lq = torch.cat([lq,lq_view], dim=0)
+        gt = torch.cat([gt,gt_view], dim=0)
+        gt_label = torch.cat([gt_label,gt_label])
         losses = dict()
         # breakpoint()
         # contrastive_feat = self.deg_head(lq)
         # breakpoint()
         loss_contrastive, contrastive_feat = self.contrastive_part(lq, label=gt_label)###############
+        #######################################################################
+        # t = time.time() - t_s
+        # print('cal loss of contrastive: ', t)
+        #######################################################################    
         if not self.train_contrastive:
         # pixel loss part
             sr_image = self.generator(lq, contrastive_feat)
+            # print(sr_image)
+            # breakpoint()
             loss_pix = self.pixel_loss(sr_image, gt)
             losses['loss_pix'] = loss_pix########################
         
         # contrastive loss part
         losses.update((x, y*self.contrastive_loss_factor) for x, y in loss_contrastive.items())
-        
+        #######################################################################
+        # t = time.time() - t_s
+        # print('update losses: ', t)
+        #######################################################################    
         # losses['loss_contrastive'] = loss_contrastive * self.contrastive_loss_factor
         if self.train_contrastive:
             outputs = dict(
@@ -139,7 +165,7 @@ class BlindSR_MoCo(BaseModel):
                 num_samples=len(gt.data),
                 # results=dict(lq=lq.cpu(), 
                 #              gt=gt.cpu(), 
-                #              # output=sr_image.cpu(),
+                #              # output=sr_image.cpu(), 
                 #              )
                 )
         else:
@@ -152,6 +178,10 @@ class BlindSR_MoCo(BaseModel):
                              )
                 )
         # breakpoint()
+        #######################################################################
+        # t = time.time() - t_s
+        # print('finish time: ', t)
+        #######################################################################    
         return outputs
     def evaluate(self, output, gt):
         """Evaluation function.
@@ -223,7 +253,7 @@ class BlindSR_MoCo(BaseModel):
             # breakpoint()
         return results
 
-    def forward_dummy(self, img):
+    def forward_dummy(self, lq):
         """Used for computing network FLOPs.
 
         Args:
@@ -232,8 +262,11 @@ class BlindSR_MoCo(BaseModel):
         Returns:
             Tensor: Output image.
         """
-        out, _ = self.generator(img)
-        return out
+        # breakpoint()
+        contrastive_feat = self.contrastive_part.extract_feat(lq) ############
+        output = self.generator(lq, contrastive_feat)        
+        # out, _ = self.generator(img)
+        return output
 
     def train_step(self, data_batch, optimizer):
         """Train step.
@@ -245,7 +278,13 @@ class BlindSR_MoCo(BaseModel):
         Returns:
             dict: Returned output.
         """
-        
+        # check1 = self.generator.module.body[0].body[5].weight.clone()
+        # check2 = self.generator.module.body[4].body[5].weight.clone()
+        #######################################################################
+        # import time
+        # t_s = time.time()
+        # print('start the batch: ', t_s)
+        #######################################################################
         if isinstance(data_batch, list):
             data_all = data_batch[0]
             for i in range(len(data_batch)):
@@ -258,30 +297,55 @@ class BlindSR_MoCo(BaseModel):
         # t = time.time() - t
         # print(t)
         # breakpoint()            
-            
+        
         outputs = self(**data_all, test_mode=False)
         # breakpoint()
+        #######################################################################
+        # t = time.time() - t_s
+        # print('calculation of outputs: ', t)
+        #######################################################################
         loss, log_vars = self.parse_losses(outputs.pop('losses'))
         # breakpoint()
         # print(log_vars)
         if not self.train_contrastive:
             optimizer['generator'].zero_grad()
         
-        optimizer['contrastive_part'].zero_grad()
+        # optimizer['contrastive_part']['backbone'].zero_grad()
+        # optimizer['contrastive_part']['neck'].zero_grad()
+        # optimizer['contrastive_part']['head'].zero_grad()
         # optimizer['neck'].zero_grad()
         # breakpoint()
-        # optimizer.zero_grad()
+        optimizer['contrastive_part'].zero_grad()
+
         loss.backward()
+        # clipping the gradient
+        if self.clipping_value != 0:
+            torch.nn.utils.clip_grad_norm(self.generator.parameters(), self.clipping_value)
+        #######################################################################
+        # t = time.time() - t_s
+        # print('loss backward: ', t)
+        #######################################################################        
         # optimizer.step()
         if not self.train_contrastive:
             optimizer['generator'].step()
             # breakpoint()
         optimizer['contrastive_part'].step()
+        # optimizer['contrastive_part']['backbone'].step()
+        # optimizer['contrastive_part']['neck'].step()
+        # optimizer['contrastive_part']['head'].step()
         # optimizer['neck'].step()
         
         outputs.update({'log_vars': log_vars})
-        
+        #######################################################################
+        # t = time.time() - t_s
+        # print('from backwrad to finish time: ', t)
+        #######################################################################        
         # breakpoint()
+        # check11 = self.generator.module.body[0].body[5].weight 
+        # check22 = self.generator.module.body[4].body[5].weight 
+        # res1 = torch.equal(check1,check11)
+        # res2 = torch.equal(check2,check22)
+        # print(res1, res2, '111111111111111111')        
         return outputs
 
     def val_step(self, data_batch, **kwargs):

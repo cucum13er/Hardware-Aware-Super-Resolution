@@ -32,6 +32,6 @@ lr_config = dict(
 # the max_keep_ckpts controls the max number of ckpt file in your work_dirs
 # if it is 3, when CheckpointHook (in mmcv) saves the 4th ckpt
 # it will remove the oldest one to keep the number of total ckpts as 3
-runner = dict(type='EpochBasedRunner', max_epochs=2000) 
+runner = dict(type='EpochBasedRunner', max_epochs=5) 
 #load_from = 'work_dirs/selfsup/simclr/simclr_resnet18_epoch1000_temp0_1_randomcrop/epoch_1000.pth'  # Runner to load ckpt
-checkpoint_config = dict(interval=200, max_keep_ckpts=5)
+checkpoint_config = dict(interval=1, max_keep_ckpts=5)

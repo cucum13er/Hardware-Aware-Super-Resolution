@@ -201,15 +201,20 @@ class Flip:
         Returns:
             dict: A dict containing the processed data and information.
         """
+        # print(results[self.keys[1]].shape, '1111111111')
+        # print(results[self.keys[1]].dtype, '2222222222')
         flip = np.random.random() < self.flip_ratio
-
+        # print(results[self.keys[0]].shape, '2222222222')
+        # breakpoint()
         if flip:
             for key in self.keys:
                 if isinstance(results[key], list):
                     for v in results[key]:
-                        mmcv.imflip_(v, self.direction)
+                        # mmcv.imflip_(v, self.direction)
+                        mmcv.imflip(v, self.direction)
                 else:
-                    mmcv.imflip_(results[key], self.direction)
+                    # mmcv.imflip_(results[key], self.direction)
+                    mmcv.imflip(results[key], self.direction)
 
         results['flip'] = flip
         results['flip_direction'] = self.direction

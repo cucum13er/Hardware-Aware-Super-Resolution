@@ -11,11 +11,14 @@ from .relative_loc import RelativeLocDataset
 from .rotation_pred import RotationPredDataset
 from .samplers import *  # noqa: F401,F403
 from .single_view import SingleViewDataset
+###################################################################################
 from .multi_device import MultiDeviceDataset
 from .cifar10 import CIFAR10
+from .multi_device_ours import MultiDeviceDataset_ours
 __all__ = [
     'DATASETS', 'DATASOURCES', 'PIPELINES', 'BaseDataset', 'build_dataloader',
     'build_dataset', 'build_datasource', 'ConcatDataset', 'RepeatDataset',
     'DeepClusterDataset', 'MultiViewDataset', 'SingleViewDataset',
-    'RelativeLocDataset', 'RotationPredDataset', 'MultiDeviceDataset', 'CIFAR10'
+    'RelativeLocDataset', 'RotationPredDataset', 'MultiDeviceDataset', 'CIFAR10',
+    'MultiDeviceDataset_ours'
 ]

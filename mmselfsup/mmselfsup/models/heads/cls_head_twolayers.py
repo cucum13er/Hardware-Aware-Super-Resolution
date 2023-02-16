@@ -67,7 +67,9 @@ class ClsHead_Twolayers(BaseModule):
         # import torch
         # simMatrix = torch.matmul(cls_feaures, cls_feaures.permute(1, 0) )
         # loss_snn = SNNLossHead().forward(simMatrix,labels)
-        # print(loss_snn,'11111111111111111111\n')
+        # print(cls_score)
+        # print(labels)
+        # breakpoint()
         return [cls_score], cls_feaures
 
     def loss(self, cls_score, labels):

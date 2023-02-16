@@ -100,6 +100,9 @@ def multi_gpu_test(model,
     if rank == 0:
         prog_bar = mmcv.ProgressBar(len(dataset))
     for data in data_loader:
+        # breakpoint()
+        if isinstance(data, list):
+            data = data[0]
         with torch.no_grad():
             result = model(
                 test_mode=True,

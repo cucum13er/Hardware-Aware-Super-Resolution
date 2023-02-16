@@ -63,7 +63,8 @@ data = dict(
             ######################### changed to tiny-imagenet ################
             # data_prefix='data/ThreeDevices', #########################
             #data_prefix='data/MultiDegrade/SupER1/X4/train', #########################
-            data_prefix='data/MultiDegrade/DIV2K/X4/train_more', #########################
+            #data_prefix='data/MultiDegrade/DIV2K/X4/train_more', #########################
+            data_prefix='data/MultiDegrade/DIV2K/X4/train_aniso', #########################
             # data_prefix='data/MultiDegrade/Flickr2K/X4/train', #########################
             ann_file= None, #######################            
             # data_prefix='data/imagenet/train', #########################

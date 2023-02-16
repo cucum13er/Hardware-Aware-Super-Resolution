@@ -9,7 +9,8 @@ model = dict(
         depth=18,
         in_channels=3,
         out_indices=[4],  # 0: conv-1, x: stage-x
-        norm_cfg=dict(type='BN')),
+        norm_cfg=dict(type='BN'),
+        init_cfg=None),
     neck=dict(
         type='MoCoV2Neck',
         in_channels=512,

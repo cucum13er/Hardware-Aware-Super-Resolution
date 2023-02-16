@@ -166,7 +166,7 @@ def main():
     # build the model
     model = build_algorithm(cfg.model)
     model.init_weights()
-
+    # breakpoint()
     # model is determined in this priority: init_cfg > checkpoint > random
     if getattr(cfg.model.backbone.init_cfg, 'type', None) == 'Pretrained':
         logger.info(
@@ -185,13 +185,23 @@ def main():
             model.cuda(),
             device_ids=[torch.cuda.current_device()],
             broadcast_buffers=False)
-
-    # build extraction processor and run
+    # breakpoint()
+    ###########################################################################
+    # # build extraction processor and run
+    # extractor = ExtractProcess(
+    #     pool_type='specified', backbone='resnet50', layer_indices=layer_ind)
+    # features = extractor.extract(model, data_loader, distributed=distributed)
+    
+    # labels = dataset.data_source.get_gt_labels()    
+    ###########################################################################
+    ############################changed by Rui#################################
     extractor = ExtractProcess(
-        pool_type='specified', backbone='resnet50', layer_indices=layer_ind)
+        pool_type='specified', backbone='easyres', layer_indices=[0])
     features = extractor.extract(model, data_loader, distributed=distributed)
-    labels = dataset.data_source.get_gt_labels()
-
+    
+    labels = dataset.data_source.get_gt_labels()  
+  
+    ###########################################################################
     # save features
     mmcv.mkdir_or_exist(f'{tsne_work_dir}features/')
     logger.info(f'Save features to {tsne_work_dir}features/')
@@ -221,21 +231,45 @@ def main():
     # run and get results
     mmcv.mkdir_or_exist(f'{tsne_work_dir}saved_pictures/')
     logger.info('Running t-SNE......')
-    for key, val in features.items():
-        result = tsne_model.fit_transform(val)
-        res_min, res_max = result.min(0), result.max(0)
-        res_norm = (result - res_min) / (res_max - res_min)
-        plt.figure(figsize=(10, 10))
-        plt.scatter(
-            res_norm[:, 0],
-            res_norm[:, 1],
-            alpha=1.0,
-            s=15,
-            c=labels,
-            cmap='tab20')
-        plt.savefig(f'{tsne_work_dir}saved_pictures/{key}.png')
+    # breakpoint()
+    vals = np.squeeze(np.array(list(features.values()) ) )
+    result = tsne_model.fit_transform(vals)
+    res_min, res_max = result.min(0), result.max(0)
+    res_norm = (result - res_min) / (res_max - res_min)
+    plt.figure(figsize=(10, 10))
+    plt.rcParams['font.size'] = '16'
+    scatter = plt.scatter(
+        res_norm[:, 0],
+        res_norm[:, 1],
+        alpha=1.0,
+        s=40, # dot size
+        c=labels,
+        cmap='tab20')
+    # for simulation
+    # classes = ['$\sigma=0.5$','$\sigma=1.0$','$\sigma=2.0$','$\sigma=3.0$','$\sigma=4.0$']
+    # for realMicron
+    classes = ['Cam C1300','Cam C4112','Cam C640']
+    # for DRealSR
+    # classes = ['Canon', 'Nikon', 'Olympus', 'Panasonic', 'Sony']
+    plt.legend(handles=scatter.legend_elements()[0], labels=classes,fontsize=16)
+    # plt.legend('$\sigma=0.5$','$\sigma=1.0$','$\sigma=2.0$','$\sigma=3.0$','$\sigma=4.0$')
+    plt.savefig(f'{tsne_work_dir}saved_pictures/{key}.png')
+    # for key, val in features.items():
+    #     breakpoint()
+    #     result = tsne_model.fit_transform(val)
+    #     res_min, res_max = result.min(0), result.max(0)
+    #     res_norm = (result - res_min) / (res_max - res_min)
+    #     plt.figure(figsize=(10, 10))
+    #     plt.scatter(
+    #         res_norm[:, 0],
+    #         res_norm[:, 1],
+    #         alpha=1.0,
+    #         s=15,
+    #         c=labels,
+    #         cmap='tab20')
+    #     plt.savefig(f'{tsne_work_dir}saved_pictures/{key}.png')
     logger.info(f'Saved results to {tsne_work_dir}saved_pictures/')
-
+    # breakpoint()
 
 if __name__ == '__main__':
     main()

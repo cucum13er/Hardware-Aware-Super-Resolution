@@ -144,6 +144,7 @@ class MoCo_label(BaseModel):
 
             # undo shuffle
             k = batch_unshuffle_ddp(k, idx_unshuffle)
+        # print(label)            
         # breakpoint()
         # q = 256*128, k = 256*128, 256: batchsize 128:feature length
         self._dequeue_and_enqueue(k, label)

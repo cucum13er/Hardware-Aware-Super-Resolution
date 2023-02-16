@@ -49,6 +49,7 @@ class MultiDeviceDataset(BaseDataset):
         for i in range(len(num_views)):
             trans.extend([self.pipelines[i]] * num_views[i])
         self.trans = trans
+        # breakpoint()
 
     def __getitem__(self, idx):
         img = self.data_source.get_img(idx)
@@ -65,7 +66,8 @@ class MultiDeviceDataset(BaseDataset):
         # imgplot = plt.imshow(multi_views[0].to('cpu').permute(1,2,0))
         # plt.show()
  
-        # print(img.size,'222222222222222222222\n')
+            # print(img.size,'222222222222222222222\n')
+            # print(label, '111111111111111111111\n')
         # print(multi_views[0][0,:,:],'33333333333333333\n')
         # print(multi_views[0][1,:,:],'44444444444444444\n')
         # breakpoint()

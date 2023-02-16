@@ -9,7 +9,8 @@ train_pipeline = [
     dict(type='RandomVerticalFlip'),
 ]
 test_pipeline = [
-    dict(type='RandomCrop', size=160),
+    #dict(type='RandomCrop', size=200),
+    dict(type='RandomCrop', size=160),    
     dict(type='RandomHorizontalFlip'),
     dict(type='RandomVerticalFlip'),
     dict(type='ToTensor'),
@@ -76,7 +77,9 @@ data = dict(
             type=data_source,
             ######################### changed to diff datasets ################
             #data_prefix='data/MultiDegrade/Flickr2K/X4/test',
-            data_prefix='data/MultiDegrade/DIV2K/X4/test',            
+            #data_prefix='data/MultiDegrade/DIV2K/X4/test',            
+            #data_prefix='data/MultiDegrade/DIV2K/X4/test_more',            
+            data_prefix='data/MultiDegrade/DIV2K/X4/test_aniso',            
             #data_prefix='data/test_contrastive/BSD100/lq', #########################
             #data_prefix='data/test_contrastive/Set5/lq', #########################
             #data_prefix='data/test_contrastive/Set14/lq', #########################            

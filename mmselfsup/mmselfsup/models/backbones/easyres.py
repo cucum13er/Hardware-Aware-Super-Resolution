@@ -11,6 +11,7 @@ class EasyRes(BaseModule):
                  # out_channels,   
                  frozen_stages = -1,   
                  init_cfg=None,
+                 out_indices=1,
                  ):
         
         super(EasyRes, self).__init__(init_cfg)
@@ -67,7 +68,7 @@ if __name__ == "__main__":
     net = EasyRes(3)
     img = torch.rand([4,3,48,48])
     f= net(img)
-    print(f.shape)
+    print(f[0].shape)
     
     
     

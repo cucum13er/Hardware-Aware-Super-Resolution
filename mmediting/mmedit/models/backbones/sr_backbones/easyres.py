@@ -64,9 +64,10 @@ class EasyRes(nn.Module):
         if isinstance(x, list):
             x = torch.cat(x)
         #######################################################################             
+
         fea = self.E(x)
         # out = self.mlp(fea)
-    
+        # breakpoint()
         return [fea]
 
     def _freeze_stages(self):

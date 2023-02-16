@@ -27,6 +27,9 @@ from .sr_vimeo90k_multiple_gt_dataset import SRVimeo90KMultipleGTDataset
 #################################################################################
 from .sr_multifolder_dataset import SRMultiFolderDataset
 from .sr_multifolder_labeled_dataset import SRMultiFolderLabeledDataset
+from .sr_multifolder_our_dataset import SROurDataset
+from .sr_multifolder_our_dataset_val import SROurDataset_val
+from .sr_multifolder_DRealSR import SRDRealSR
 __all__ = [
     'DATASETS', 'PIPELINES', 'build_dataset', 'build_dataloader',
     'BaseDataset', 'BaseMattingDataset', 'ImgInpaintingDataset',
@@ -36,5 +39,6 @@ __all__ = [
     'GenerationUnpairedDataset', 'SRVid4Dataset', 'SRFolderGTDataset',
     'SRREDSMultipleGTDataset', 'SRVimeo90KMultipleGTDataset',
     'SRTestMultipleGTDataset', 'SRFolderRefDataset', 'SRFacialLandmarkDataset',
-    'SRFolderMultipleGTDataset', 'SRFolderVideoDataset','SRMultiFolderDataset', 'SRMultiFolderLabeledDataset'
+    'SRFolderMultipleGTDataset', 'SRFolderVideoDataset','SRMultiFolderDataset', 
+    'SRMultiFolderLabeledDataset', 'SROurDataset','SROurDataset_val', 'SRDRealSR', 
 ]

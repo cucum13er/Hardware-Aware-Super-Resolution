@@ -1,7 +1,9 @@
 _base_ = [
-    '../_base_/models/easyres_cls5.py',
-    #'../_base_/datasets/multidevice_simclr_DIV2K.py',
-    '../_base_/datasets/multidevice_simclr_TestAll.py',    
+    #'../_base_/models/easyres_cls5.py', # for training 5 cls
+    '../_base_/models/easyres_cls9.py', # for training 9 cls
+    #'../_base_/datasets/multidevice_simclr_DIV2K.py',       # for training 5 cls
+    #'../_base_/datasets/multidevice_simclr_DIV2K_more.py',       # for training 9 cls
+    '../_base_/datasets/multidevice_simclr_TestAll.py',    # for testing
     '../_base_/schedules/sgd_coslr-100e.py',
     '../_base_/default_runtime.py',
 ]

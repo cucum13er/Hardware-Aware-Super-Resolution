@@ -79,6 +79,7 @@ class SNNLossHead(BaseModule):
             # delete the sample itself
             neg_tmp = neg_tmp[neg_tmp!=idx].to(numerator.device)
             denominator = torch.sum(torch.exp( torch.index_select(single_sample, 0, neg_tmp)/self.temperature ) ) + 1e-10
+            # print(numerator,'111111111111')
             # print(denominator,'2222222222222\n')
             single_loss = torch.log(numerator/denominator)
             lossall.append(single_loss)

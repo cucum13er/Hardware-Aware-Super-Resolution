@@ -116,8 +116,10 @@ class MoCo_label(BaseModel):
             dict[str, Tensor]: A dictionary of loss components.
         """
         assert isinstance(img, list)
-        im_q = img[0]
-        im_k = img[1]
+        assert len(img) == 4
+        im_q = torch.cat(img[0:2])
+        im_k = torch.cat(img[2:])
+        label = label.repeat(2)
         # print(im_q,'11111111\n')
         # print(im_k,'22222222\n')
         # breakpoint()

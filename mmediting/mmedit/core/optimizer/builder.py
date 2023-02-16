@@ -53,6 +53,7 @@ def build_optimizers(model, cfgs):
             cfg_ = cfg.copy()
             module = getattr(model, key)
             optimizers[key] = build_optimizer(module, cfg_)
+            # breakpoint()
         return optimizers
 
     return build_optimizer(model, cfgs)

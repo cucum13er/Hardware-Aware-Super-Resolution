@@ -23,7 +23,7 @@ def calc_mean_std(feat, eps=1e-5):
 
 
 def adaptive_instance_normalization(content_feat, style_feat):
-    
+    # breakpoint()
     assert (content_feat.size()[0] == style_feat.size()[0])
     assert (content_feat.size()[1] * 2 == style_feat.size()[1])
     size = content_feat.size()
@@ -47,7 +47,7 @@ class ResidualBlock_AdaIN(nn.Module):
     def __init__(self, mid_channels=64, res_scale=1.0, featsize=512):
         super().__init__()
         assert featsize == mid_channels * 8
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.avgpool = nn.AdaptiveAvgPool2d((1,1))
         self.AdaNN = nn.Sequential(
                     nn.Linear(featsize, featsize//2, bias=False),
                     nn.LeakyReLU(0.1, True),
@@ -72,8 +72,10 @@ class ResidualBlock_AdaIN(nn.Module):
         # assert len(x) == 2
         # features = x[1]
         # x = x[0]
+        # breakpoint()
         features = self.avgpool(features)
         features = features.squeeze(-1).squeeze(-1)
+        # breakpoint()
         features = self.AdaNN( features ).unsqueeze(-1).unsqueeze(-1)
         
         # b*64*H*W

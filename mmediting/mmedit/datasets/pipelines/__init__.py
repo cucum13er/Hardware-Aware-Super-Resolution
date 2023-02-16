@@ -25,7 +25,8 @@ from .random_degradations import (DegradationsWithShuffle, RandomBlur,
                                   RandomJPEGCompression, RandomNoise,
                                   RandomResize, RandomVideoCompression)
 from .random_down_sampling import RandomDownSampling
-
+####################################################################################
+from .cat_layers import CatLayers
 __all__ = [
     'Collect', 'FormatTrimap', 'LoadImageFromFile', 'LoadMask',
     'RandomLoadResizeBg', 'Compose', 'ImageToTensor', 'ToTensor',
@@ -42,5 +43,5 @@ __all__ = [
     'CropLike', 'GenerateHeatmap', 'MATLABLikeResize', 'CopyValues',
     'Quantize', 'RandomBlur', 'RandomJPEGCompression', 'RandomNoise',
     'DegradationsWithShuffle', 'RandomResize', 'UnsharpMasking',
-    'RandomVideoCompression', 'CropSequence'
+    'RandomVideoCompression', 'CropSequence', 'CatLayers',
 ]

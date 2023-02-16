@@ -5,7 +5,40 @@ import torch
 
 from .gather import gather_tensors_batch
 
+def nondist_forward_collect_Rui(func, data_loader, length):
+    """Forward and collect network outputs.
 
+    This function performs forward propagation and collects outputs.
+    It can be used to collect results, features, losses, etc.
+
+    Args:
+        func (function): The function to process data. The output must be
+            a dictionary of CPU tensors.
+        data_loader (Dataloader): the torch Dataloader to yield data.
+        length (int): Expected length of output arrays.
+
+    Returns:
+        results_all (dict(np.ndarray)): The concatenated outputs.
+    """
+    results = []
+
+    prog_bar = mmcv.ProgressBar(len(data_loader))
+
+    for idx, data in enumerate(data_loader):
+        # breakpoint()
+        with torch.no_grad():
+            result = func(**data)  # dict{key: tensor}
+        results.append(result)
+        prog_bar.update()
+
+    results_all = {}
+    batch_size = len(results[0])
+    for batch_idx, res in enumerate(results):
+        for num, k in enumerate(res.keys()):
+            # breakpoint()
+            results_all[f'feat{batch_size*batch_idx+num}'] = res[k].numpy()
+            
+    return results_all
 def nondist_forward_collect(func, data_loader, length):
     """Forward and collect network outputs.
 

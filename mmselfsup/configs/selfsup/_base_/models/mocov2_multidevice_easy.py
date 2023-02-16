@@ -7,6 +7,7 @@ model = dict(
     backbone=dict(
         type='EasyRes',
         in_channels=3,
+        init_cfg=None,
         ),
     neck=dict(
         type='MoCoV2Neck',
